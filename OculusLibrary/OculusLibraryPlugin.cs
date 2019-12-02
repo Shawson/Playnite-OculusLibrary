@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 
 namespace OculusLibrary
@@ -16,11 +17,13 @@ namespace OculusLibrary
 
         public override string Name { get; } = "Oculus Library";
 
-        private JavaScriptSerializer serialiser;
+        private readonly JavaScriptSerializer serialiser;
+        private readonly OculusWebsiteScraper oculusScraper;
 
         public OculusLibraryPlugin(IPlayniteAPI api) : base(api)
         {
             serialiser = new JavaScriptSerializer();
+            oculusScraper = new OculusWebsiteScraper();
         }
 
         public override IEnumerable<GameInfo> GetGames()
@@ -36,7 +39,7 @@ namespace OculusLibrary
                     var executableFullPath = $@"{oculusBasePath}Software\Software\{manifest.CanonicalName}\{manifest.LaunchFile}";
 
                     // set a default name
-                    var name = Path.GetFileNameWithoutExtension(executableFullPath);
+                    var executableName = Path.GetFileNameWithoutExtension(executableFullPath);
 
                     var icon = $@"{oculusBasePath}CoreData\Software\StoreAssets\{manifest.CanonicalName}_assets\icon_image.jpg";
 
@@ -52,11 +55,12 @@ namespace OculusLibrary
                         backgroundImage = string.Empty;
                     }
 
-                    name = TryResolveNameFromAppId(view, manifest.AppId) ?? name;
+                    var scrapedData = oculusScraper.ScrapeDataForApplicationId(view, manifest.AppId);
 
                     gameInfos.Add(new GameInfo
                     {
-                        Name = name,
+                        Name = scrapedData?.Name ?? executableName,
+                        Description = scrapedData?.Description ?? string.Empty,
                         GameId = manifest.AppId,
                         PlayAction = new GameAction
                         {
@@ -72,28 +76,6 @@ namespace OculusLibrary
             }
 
             return gameInfos;
-        }
-
-        private string TryResolveNameFromAppId(IWebView view, string appId)
-        {
-            // get the application id's and smash into this; (IWebView ?)
-            // robo recall 1081190428622821
-            // https://www.oculus.com/experiences/rift/<appid>/
-
-            view.NavigateAndWait($"https://www.oculus.com/experiences/rift/{appId}/");
-            var source = view.GetPageSource();
-
-            // get the json block from the source which contains the games meta data
-            /*
-            System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex("<script type=\"application/ld+json\">(.*)</script>");
-            var json = regex.Match(source);
-
-            var manifest = serialiser.Deserialize<OculusWebsiteJson>(json.Value);
-
-            return manifest?.Name;
-            */
-
-            return null;
         }
 
         internal IEnumerable<OculusManifest> GetOculusAppManifests(string oculusBasePath)
