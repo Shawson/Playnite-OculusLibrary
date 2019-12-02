@@ -51,6 +51,8 @@
   <ItemGroup>
     <Compile Include="OculusLibraryPlugin.cs" />
     <Compile Include="OculusManifest.cs" />
+    <Compile Include="OculusWebsiteAggregateRating.cs" />
+    <Compile Include="OculusWebsiteJson.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
