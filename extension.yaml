@@ -1,1 +1,6 @@
-﻿
+﻿Name: Oculus Library Importer
+Author: Shaw Young
+Version: 1.0
+Module: OculusLibrary.dll
+Type: GameLibrary
+Icon: Resources\oculusicon.png
