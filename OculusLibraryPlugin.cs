@@ -54,17 +54,8 @@ namespace OculusLibrary
                         backgroundImage = string.Empty;
                     }
 
-
-                    // get the application id's and smash into this; (IWebView ?)
-                    // robo recall 1081190428622821
-                    // https://www.oculus.com/experiences/rift/<appid>/
-
-                    //view.NavigateAndWait($"https://www.oculus.com/experiences/rift/{manifest.AppId}/");
-                    //view.GetPageSource();
-
-                    // game icons and assets; 
-                    // {oculusBasePath}\CoreData\Software\StoreAssets\{manifest.CanonicalName}_assets\icon_image.jpg
-
+                    name = TryResolveNameFromAppId(manifest.AppId) ?? name;
+                    
                     gameInfos.Add(new GameInfo
                     {
                         Name = name,
@@ -83,24 +74,18 @@ namespace OculusLibrary
             }
 
             return gameInfos;
-            /*
-            return new List<GameInfo>()
-            {
+        }
 
-                new GameInfo()
-                {
-                    Name = "Calculator",
-                    GameId = "calc",
-                    PlayAction = new GameAction()
-                    {
-                        Type = GameActionType.File,
-                        Path = "calc.exe"
-                    },
-                    IsInstalled = true,
-                    Icon = @"https://playnite.link/applogo.png",
-                    BackgroundImage =  @"https://playnite.link/applogo.png"
-                }
-            };*/
+        private string TryResolveNameFromAppId(string appId)
+        {
+            // get the application id's and smash into this; (IWebView ?)
+            // robo recall 1081190428622821
+            // https://www.oculus.com/experiences/rift/<appid>/
+
+            //view.NavigateAndWait($"https://www.oculus.com/experiences/rift/{manifest.AppId}/");
+            //view.GetPageSource();
+
+            return null;
         }
 
         internal static IEnumerable<OculusManifest> GetOculusAppManifests(string oculusBasePath)
