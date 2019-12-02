@@ -47,11 +47,11 @@ namespace OculusLibrary
                         icon = executableFullPath;
                     }
 
-                    var backgorundImage = $@"{oculusBasePath}\CoreData\Software\StoreAssets\{manifest.CanonicalName}_assets\cover_landscape_image_large.png";
+                    var backgroundImage = $@"{oculusBasePath}\CoreData\Software\StoreAssets\{manifest.CanonicalName}_assets\cover_landscape_image_large.png";
 
-                    if (!File.Exists(backgorundImage))
+                    if (!File.Exists(backgroundImage))
                     {
-                        backgorundImage = string.Empty;
+                        backgroundImage = string.Empty;
                     }
 
 
@@ -77,7 +77,7 @@ namespace OculusLibrary
                         },
                         IsInstalled = true,
                         Icon = executableFullPath,
-                        BackgroundImage = backgorundImage
+                        BackgroundImage = backgroundImage
                     });
                 }
             }
