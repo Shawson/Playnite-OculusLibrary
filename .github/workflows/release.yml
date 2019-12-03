@@ -25,7 +25,7 @@ jobs:
 
       - name: Zip Build artifacts
         run: |
-           Compress-Archive -Path $Env:GITHUB_WORKSPACE\OculusLibrary\bin\Release -DestinationPath -Path $Env:GITHUB_WORKSPACE\OculusLibrary\bin\Release\Oculus.zip
+           Compress-Archive -Path $Env:GITHUB_WORKSPACE\OculusLibrary\bin\Release\* -DestinationPath $Env:GITHUB_WORKSPACE\OculusLibrary\bin\Release\Oculus.zip
 
       - name: Create Release
         id: create_release
