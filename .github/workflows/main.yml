@@ -38,6 +38,6 @@ jobs:
         uses: Roang-zero1/github-upload-release-artifacts-action@master
         with:
           args:
-          - $Env:GITHUB_WORKSPACE\OculusLibrary\bin\Release\Oculus.zip
+            - $Env:GITHUB_WORKSPACE\OculusLibrary\bin\Release\Oculus.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
