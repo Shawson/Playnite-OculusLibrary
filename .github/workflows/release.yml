@@ -20,12 +20,15 @@ jobs:
 
       - name: Build (DotNET4.6.2)
         run: |
+           cd
            cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
            .\MSBuild.exe $Env:GITHUB_WORKSPACE\OculusLibrary.sln -p:Configuration=Release -restore
 
       - name: Zip Build artifacts
         run: |
+           cd
            Compress-Archive -Path $Env:GITHUB_WORKSPACE\OculusLibrary\bin\Release\* -DestinationPath $Env:GITHUB_WORKSPACE\OculusLibrary\bin\Release\Oculus.zip
+           ls 
 
       - name: Create Release
         id: create_release
