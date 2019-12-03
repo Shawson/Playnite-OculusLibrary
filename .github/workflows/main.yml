@@ -1,9 +1,9 @@
-name: CI
-
 on: 
   push:
     branches:
-      - 'release/**'
+      - master
+
+name: CI
 
 jobs:
   build:
@@ -22,22 +22,3 @@ jobs:
         run: |
            cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
            .\MSBuild.exe $Env:GITHUB_WORKSPACE\OculusLibrary.sln -p:Configuration=Release -restore
-
-      - name: Zip Build artifacts
-        run: |
-           Compress-Archive -Path $Env:GITHUB_WORKSPACE\OculusLibrary\bin\Release -DestinationPath -Path $Env:GITHUB_WORKSPACE\OculusLibrary\bin\Release\Oculus.zip
-
-      - name: Create GitHub release
-        uses: Roang-zero1/github-create-release-action@master
-        with:
-          version_regex: ^v[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create GitHub release
-        uses: Roang-zero1/github-upload-release-artifacts-action@master
-        with:
-          args:
-            - $Env:GITHUB_WORKSPACE\OculusLibrary\bin\Release\Oculus.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
