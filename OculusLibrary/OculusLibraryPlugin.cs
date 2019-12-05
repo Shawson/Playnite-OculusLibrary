@@ -59,7 +59,7 @@ namespace OculusLibrary
                             // set a default name
                             var executableName = Path.GetFileNameWithoutExtension(executableFullPath);
 
-                            var icon = $@"{oculusBasePath}zCoreData\Software\StoreAssets\{manifest.CanonicalName}_assets\icon_image.jpg";
+                            var icon = $@"{oculusBasePath}\..\CoreData\Software\StoreAssets\{manifest.CanonicalName}_assets\icon_image.jpg";
 
                             if (!File.Exists(icon))
                             {
@@ -67,7 +67,7 @@ namespace OculusLibrary
                                 icon = executableFullPath;
                             }
 
-                            var backgroundImage = $@"{oculusBasePath}zCoreData\Software\StoreAssets\{manifest.CanonicalName}_assets\cover_landscape_image_large.png";
+                            var backgroundImage = $@"{oculusBasePath}\..\CoreData\Software\StoreAssets\{manifest.CanonicalName}_assets\cover_landscape_image_large.png";
 
                             if (!File.Exists(backgroundImage))
                             {
@@ -115,7 +115,7 @@ namespace OculusLibrary
             return gameInfos;
         }
 
-        private IEnumerable<OculusManifest> GetOculusAppManifests(string oculusBasePath)
+        private List<OculusManifest> GetOculusAppManifests(string oculusBasePath)
         {
             logger.Debug($"Listing Oculus manifests");
 
@@ -125,16 +125,45 @@ namespace OculusLibrary
             {
                 logger.Info($"No Oculus game manifests found");
             }
-            
+
+            var manifests = new List<OculusManifest>();
+
             foreach (string fileName in fileEntries.Where(x => x.EndsWith(".json")))
             {
-                var json = File.ReadAllText(fileName);
-                var manifest = serialiser.Deserialize<OculusManifest>(json);
+                try
+                {
+                    if (fileName.EndsWith("_assets.json"))
+                    {
+                        // not interested in the asset json files
+                        continue;
+                    }
 
-                manifest.LaunchFile = manifest.LaunchFile.Replace("/", @"\");
+                    var json = File.ReadAllText(fileName);
 
-                yield return manifest;
+                    if (string.IsNullOrWhiteSpace(json))
+                    {
+                        logger.Error($"JSON file is empty ({fileName})");
+                        continue;
+                    }
+
+                    var manifest = serialiser.Deserialize<OculusManifest>(json);
+
+                    if (manifest == null)
+                    {
+                        logger.Error($"Could not deserialise json ({fileName})");
+                    }
+
+                    manifest.LaunchFile = manifest?.LaunchFile?.Replace("/", @"\");
+
+                    manifests.Add(manifest);
+                }
+                catch (Exception ex)
+                {
+                    logger.Error($"Exception while processing manifest ({fileName}) : {ex}");
+                }
             }
+
+            return manifests;
         }
 
         private List<string> GetOculusLibraryLocations(RegistryView platformView)
