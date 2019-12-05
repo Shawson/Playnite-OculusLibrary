@@ -13,14 +13,16 @@ namespace OculusLibrary.Tests
         [SetUp]
         public void Setup()
         {
-            var testHtml = File.ReadAllText("OculusLibrary.Tests\\demo1.html");
+            var testHtml = File.ReadAllText($"{TestContext.CurrentContext.TestDirectory}\\demo1.html");
 
             fakeWebView = Substitute.For<IWebView>();
 
             fakeWebView.GetPageSource()
                 .Returns(testHtml);
 
-            subject = new OculusWebsiteScraper();
+            var fakeLogger = Substitute.For<ILogger>();
+
+            subject = new OculusWebsiteScraper(fakeLogger);
         }
 
         [TearDown]
