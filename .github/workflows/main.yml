@@ -2,6 +2,7 @@ on:
   push:
     branches:
       - master
+      - develop
 
 name: CI
 
