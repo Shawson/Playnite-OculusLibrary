@@ -54,12 +54,12 @@ namespace OculusLibrary
 
                         try
                         {
-                            var executableFullPath = $@"{oculusBasePath}Software\Software\{manifest.CanonicalName}\{manifest.LaunchFile}";
+                            var executableFullPath = $@"{oculusBasePath}\Software\{manifest.CanonicalName}\{manifest.LaunchFile}";
 
                             // set a default name
                             var executableName = Path.GetFileNameWithoutExtension(executableFullPath);
 
-                            var icon = $@"{oculusBasePath}CoreData\Software\StoreAssets\{manifest.CanonicalName}_assets\icon_image.jpg";
+                            var icon = $@"{oculusBasePath}zCoreData\Software\StoreAssets\{manifest.CanonicalName}_assets\icon_image.jpg";
 
                             if (!File.Exists(icon))
                             {
@@ -67,7 +67,7 @@ namespace OculusLibrary
                                 icon = executableFullPath;
                             }
 
-                            var backgroundImage = $@"{oculusBasePath}CoreData\Software\StoreAssets\{manifest.CanonicalName}_assets\cover_landscape_image_large.png";
+                            var backgroundImage = $@"{oculusBasePath}zCoreData\Software\StoreAssets\{manifest.CanonicalName}_assets\cover_landscape_image_large.png";
 
                             if (!File.Exists(backgroundImage))
                             {
@@ -119,7 +119,7 @@ namespace OculusLibrary
         {
             logger.Debug($"Listing Oculus manifests");
 
-            string[] fileEntries = Directory.GetFiles($@"{oculusBasePath}Software\Manifests\");
+            string[] fileEntries = Directory.GetFiles($@"{oculusBasePath}\Manifests\");
 
             if (!fileEntries.Any())
             {
@@ -148,7 +148,7 @@ namespace OculusLibrary
             try
             {
                 var libraryKeyTitles = rootKey
-                    .OpenSubKey(@"HKEY_CURRENT_USER\Software\Oculus VR, LLC\Oculus\Libraries")
+                    .OpenSubKey(@"Software\Oculus VR, LLC\Oculus\Libraries\")
                     .GetSubKeyNames();
 
                 if (libraryKeyTitles == null || !libraryKeyTitles.Any())
@@ -160,13 +160,14 @@ namespace OculusLibrary
                 foreach(var libraryKeyTitle in libraryKeyTitles)
                 {
                     var libraryPath = rootKey
-                        .OpenSubKey($@"HKEY_CURRENT_USER\Software\Oculus VR, LLC\Oculus\Libraries\{libraryKeyTitle}")
+                        .OpenSubKey($@"Software\Oculus VR, LLC\Oculus\Libraries\{libraryKeyTitle}")
                         .GetValue("OriginalPath")
                         .ToString();
 
                     if (!string.IsNullOrWhiteSpace(libraryPath))
                     {
                         libraryPaths.Add(libraryPath);
+                        logger.Debug($"Found library: {libraryPath}");
                     }
                 }
 
