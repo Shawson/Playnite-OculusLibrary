@@ -1,4 +1,6 @@
 ﻿using Microsoft.Win32;
+using OculusLibrary.DataExtraction;
+using OculusLibrary.OS;
 using Playnite.SDK;
 using Playnite.SDK.Models;
 using Playnite.SDK.Plugins;
@@ -18,6 +20,7 @@ namespace OculusLibrary
         public override string Name { get; } = "Oculus";
 
         private readonly JavaScriptSerializer serialiser;
+        private readonly IOculusPathSniffer pathSniffer;
         private readonly OculusWebsiteScraper oculusScraper;
         private readonly ILogger logger;
 
@@ -25,6 +28,7 @@ namespace OculusLibrary
         {
             logger = LogManager.GetLogger(); 
             serialiser = new JavaScriptSerializer();
+            pathSniffer = new OculusPathSniffer(new RegistryValueProvider(), new PathNormaliser(new WMODriveQueryProvider()), logger);
             oculusScraper = new OculusWebsiteScraper(logger);
         }
 
@@ -34,7 +38,7 @@ namespace OculusLibrary
 
             var gameInfos = new List<GameInfo>();
 
-            var oculusLibraryLocations = GetOculusLibraryLocations();
+            var oculusLibraryLocations = pathSniffer.GetOculusLibraryLocations();
 
             if (oculusLibraryLocations == null || !oculusLibraryLocations.Any())
             {
@@ -164,96 +168,6 @@ namespace OculusLibrary
             }
 
             return manifests;
-        }
-
-        private List<string> GetOculusLibraryLocations(RegistryView platformView)
-        {
-            var libraryPaths = new List<string>();
-
-            logger.Debug($"Getting Oculus library locations from registry ({platformView})");
-
-            RegistryKey rootKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, platformView);
-
-            try
-            {
-                var libraryKeyTitles = rootKey
-                    .OpenSubKey(@"Software\Oculus VR, LLC\Oculus\Libraries\")
-                    .GetSubKeyNames();
-
-                if (libraryKeyTitles == null || !libraryKeyTitles.Any())
-                {
-                    logger.Error("No libraries found");
-                    return null;
-                }
-                
-                foreach(var libraryKeyTitle in libraryKeyTitles)
-                {
-                    var libraryPath = rootKey
-                        .OpenSubKey($@"Software\Oculus VR, LLC\Oculus\Libraries\{libraryKeyTitle}")
-                        .GetValue("OriginalPath")
-                        .ToString();
-
-                    if (!string.IsNullOrWhiteSpace(libraryPath))
-                    {
-                        libraryPaths.Add(libraryPath);
-                        logger.Debug($"Found library: {libraryPath}");
-                    }
-                }
-
-                logger.Debug($"Libraries located: {libraryPaths.Count}");
-
-                return libraryPaths;
-            }
-            catch (Exception ex)
-            {
-                logger.Error($"Exception opening registry keys: {ex}");
-                return null;
-            }
-        }
-
-        private string GetOculusBaseFromRegistry(RegistryView platformView)
-        {
-            logger.Debug($"Getting Oculus Base path from registry ({platformView})");
-
-            // HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Session Manager\Environment\OculusBase
-            RegistryKey rootKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, platformView);
-
-            try
-            {
-                var oculusBase = rootKey
-                    .OpenSubKey(@"SYSTEM\ControlSet001\Control\Session Manager\Environment")
-                    .GetValue("OculusBase");
-
-                if (oculusBase == null)
-                {
-                    logger.Error("Registry key not found");
-                    return string.Empty;
-                }
-
-                logger.Debug($"Registry key found: {oculusBase}");
-
-                return oculusBase.ToString();
-            }
-            catch(Exception ex)
-            {
-                logger.Error($"Exception opening registry key: {ex}");
-                return string.Empty;
-            }
-        }
-
-        private List<string> GetOculusLibraryLocations()
-        {
-            logger.Debug("Trying to get Oculus base path (REG64)");
-
-            var libraryLocations = GetOculusLibraryLocations(RegistryView.Registry64);
-
-            if (libraryLocations == null)
-            {
-                logger.Debug("Trying to get Oculus base path (REG32)");
-                libraryLocations = GetOculusLibraryLocations(RegistryView.Registry32);
-            }
-
-            return libraryLocations;
         }
     }
 }

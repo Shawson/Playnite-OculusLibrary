@@ -1,4 +1,4 @@
-﻿namespace OculusLibrary
+﻿namespace OculusLibrary.DataExtraction
 {
     public class OculusWebsiteJson
     {
