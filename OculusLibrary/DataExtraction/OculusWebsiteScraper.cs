@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 
-namespace OculusLibrary
+namespace OculusLibrary.DataExtraction
 {
     public class OculusWebsiteScraper
     {

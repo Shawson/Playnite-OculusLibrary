@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Win32;
 
-namespace OculusLibrary
+namespace OculusLibrary.OS
 {
     public interface IRegistryValueProvider
     {

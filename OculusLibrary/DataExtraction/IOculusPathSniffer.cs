@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace OculusLibrary
+namespace OculusLibrary.DataExtraction
 {
     public interface IOculusPathSniffer
     {

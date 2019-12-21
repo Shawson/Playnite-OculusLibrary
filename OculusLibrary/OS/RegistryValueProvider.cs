@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OculusLibrary
+namespace OculusLibrary.OS
 {
     public class RegistryValueProvider : IRegistryValueProvider
     {

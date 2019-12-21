@@ -1,4 +1,6 @@
 ﻿using Microsoft.Win32;
+using OculusLibrary.DataExtraction;
+using OculusLibrary.OS;
 using Playnite.SDK;
 using Playnite.SDK.Models;
 using Playnite.SDK.Plugins;
@@ -26,7 +28,7 @@ namespace OculusLibrary
         {
             logger = LogManager.GetLogger(); 
             serialiser = new JavaScriptSerializer();
-            pathSniffer = new OculusPathSniffer(new RegistryValueProvider(), logger);
+            pathSniffer = new OculusPathSniffer(new RegistryValueProvider(), new PathNormaliser(new WMODriveQueryProvider()), logger);
             oculusScraper = new OculusWebsiteScraper(logger);
         }
 

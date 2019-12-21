@@ -1,4 +1,6 @@
 ﻿using Microsoft.Win32;
+using OculusLibrary.DataExtraction;
+using OculusLibrary.OS;
 using Playnite.SDK;
 using System;
 using System.Collections.Generic;
@@ -6,18 +8,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OculusLibrary
+namespace OculusLibrary.DataExtraction
 {
     public class OculusPathSniffer : IOculusPathSniffer
     {
         private readonly IRegistryValueProvider registryValueProvider;
+        private readonly IPathNormaliser pathNormaliser;
         private readonly ILogger logger;
 
         public OculusPathSniffer(
             IRegistryValueProvider registryValueProvider,
+            IPathNormaliser pathNormaliser,
             ILogger logger)
         {
             this.registryValueProvider = registryValueProvider;
+            this.pathNormaliser = pathNormaliser;
             this.logger = logger;
         }
 
@@ -48,6 +53,7 @@ namespace OculusLibrary
 
                     if (!string.IsNullOrWhiteSpace(libraryPath))
                     {
+                        libraryPath = pathNormaliser.Normalise(libraryPath);
                         libraryPaths.Add(libraryPath);
                         logger.Debug($"Found library: {libraryPath}");
                     }
