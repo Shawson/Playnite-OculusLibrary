@@ -49,12 +49,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IOculusPathSniffer.cs" />
+    <Compile Include="IRegistryValueProvider.cs" />
     <Compile Include="OculusLibraryPlugin.cs" />
     <Compile Include="OculusManifest.cs" />
+    <Compile Include="OculusPathSniffer.cs" />
     <Compile Include="OculusWebsiteAggregateRating.cs" />
     <Compile Include="OculusWebsiteJson.cs" />
     <Compile Include="OculusWebsiteScraper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RegistryValueProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="extension.yaml">
