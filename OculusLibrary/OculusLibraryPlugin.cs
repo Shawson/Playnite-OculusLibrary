@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using OculusLibrary.DataExtraction;
 using OculusLibrary.OS;
 using Playnite.SDK;
@@ -19,15 +20,13 @@ namespace OculusLibrary
 
         public override string Name { get; } = "Oculus";
 
-        private readonly JavaScriptSerializer serialiser;
         private readonly IOculusPathSniffer pathSniffer;
         private readonly OculusWebsiteScraper oculusScraper;
         private readonly ILogger logger;
 
         public OculusLibraryPlugin(IPlayniteAPI api) : base(api)
         {
-            logger = LogManager.GetLogger(); 
-            serialiser = new JavaScriptSerializer();
+            logger = LogManager.GetLogger();
             pathSniffer = new OculusPathSniffer(new RegistryValueProvider(), new PathNormaliser(new WMODriveQueryProvider()), logger);
             oculusScraper = new OculusWebsiteScraper(logger);
         }
@@ -150,7 +149,7 @@ namespace OculusLibrary
                         continue;
                     }
 
-                    var manifest = serialiser.Deserialize<OculusManifest>(json);
+                    var manifest = JsonConvert.DeserializeObject<OculusManifest>(json);
 
                     if (manifest == null)
                     {
