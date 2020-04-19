@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataExtraction\IOculusPathSniffer.cs" />
+    <Compile Include="ManifestParseException.cs" />
     <Compile Include="OS\IPathNormaliser.cs" />
     <Compile Include="OS\IRegistryValueProvider.cs" />
     <Compile Include="OS\IWindowsManagementObjectQueryProvider.cs" />
