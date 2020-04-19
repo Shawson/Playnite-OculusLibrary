@@ -47,22 +47,23 @@ namespace OculusLibrary
 
             using (var view = PlayniteApi.WebViews.CreateOffscreenView())
             {
-                foreach (var oculusBasePath in oculusLibraryLocations)
+                foreach (var currentLibraryBasePath in oculusLibraryLocations)
                 {
-                    logger.Info($"Processing Oculus library location {oculusBasePath}");
+                    logger.Info($"Processing Oculus library location {currentLibraryBasePath}");
 
-                    foreach (var manifest in GetOculusAppManifests(oculusBasePath))
+                    foreach (var manifest in GetOculusAppManifests(currentLibraryBasePath))
                     {
                         logger.Info($"Processing manifest {manifest.CanonicalName} {manifest.AppId}");
 
                         try
                         {
-                            var executableFullPath = $@"{oculusBasePath}\Software\{manifest.CanonicalName}\{manifest.LaunchFile}";
+                            var installationPath = $@"{currentLibraryBasePath}\Software\{manifest.CanonicalName}";
+                            var executableFullPath = $@"{installationPath}\{manifest.LaunchFile}";
 
                             // set a default name
                             var executableName = Path.GetFileNameWithoutExtension(executableFullPath);
 
-                            var icon = $@"{oculusBasePath}\..\CoreData\Software\StoreAssets\{manifest.CanonicalName}_assets\icon_image.jpg";
+                            var icon = $@"{currentLibraryBasePath}\..\CoreData\Software\StoreAssets\{manifest.CanonicalName}_assets\icon_image.jpg";
 
                             if (!File.Exists(icon))
                             {
@@ -70,7 +71,7 @@ namespace OculusLibrary
                                 icon = executableFullPath;
                             }
 
-                            var backgroundImage = $@"{oculusBasePath}\..\CoreData\Software\StoreAssets\{manifest.CanonicalName}_assets\cover_landscape_image_large.png";
+                            var backgroundImage = $@"{currentLibraryBasePath}\..\CoreData\Software\StoreAssets\{manifest.CanonicalName}_assets\cover_landscape_image_large.png";
 
                             if (!File.Exists(backgroundImage))
                             {
@@ -92,6 +93,7 @@ namespace OculusLibrary
                                 Name = scrapedData?.Name ?? executableName,
                                 Description = scrapedData?.Description ?? string.Empty,
                                 GameId = manifest.AppId,
+                                InstallDirectory = installationPath,
                                 PlayAction = new GameAction
                                 {
                                     Type = GameActionType.File,
@@ -142,21 +144,8 @@ namespace OculusLibrary
                     }
 
                     var json = File.ReadAllText(fileName);
-
-                    if (string.IsNullOrWhiteSpace(json))
-                    {
-                        logger.Error($"JSON file is empty ({fileName})");
-                        continue;
-                    }
-
-                    var manifest = JsonConvert.DeserializeObject<OculusManifest>(json);
-
-                    if (manifest == null)
-                    {
-                        logger.Error($"Could not deserialise json ({fileName})");
-                    }
-
-                    manifest.LaunchFile = manifest?.LaunchFile?.Replace("/", @"\");
+                    
+                    var manifest = OculusManifest.Parse(json);
 
                     manifests.Add(manifest);
                 }
